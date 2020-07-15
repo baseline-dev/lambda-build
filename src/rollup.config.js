@@ -2,7 +2,6 @@ import {terser} from 'rollup-plugin-terser';
 import commonjs from "@rollup/plugin-commonjs";
 import nodeResolve from "@rollup/plugin-node-resolve";
 import json from '@rollup/plugin-json';
-import { string } from "rollup-plugin-string";
 
 export default {
   output: {
@@ -23,9 +22,6 @@ export default {
     nodeResolve({
       jsnext: true,
       main: false
-    }),
-    string({
-      include: "**/*.txt"
     })
   ]
 };
