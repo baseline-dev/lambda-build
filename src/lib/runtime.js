@@ -39,7 +39,7 @@ class Request extends IncomingMessage {
 }
 
 function requestMethod(event) {
-  return event.requestContext.http.method;
+  return event.requestContext.http.method || 'GET';
 }
 
 function requestRemoteAddress(event) {
