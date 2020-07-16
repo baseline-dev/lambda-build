@@ -1,121 +1,14 @@
-import compose from 'koa-compose';
+import serverless from 'serverless-http';
+import Koa from 'koa';
 import * as module from '{{import}}';
 import {getMiddlewares} from '{{middlewaresPath}}';
-import {IncomingMessage} from 'http';
-import URL from 'url';
 
-class Request extends IncomingMessage {
-  constructor({ method, url, headers, body, remoteAddress }) {
-    super({
-      encrypted: true,
-      readable: false,
-      remoteAddress,
-      address: () => ({ port: 443 }),
-      end: Function.prototype,
-      destroy: Function.prototype
-    });
+const app = new Koa();
 
-    if (typeof headers['content-length'] === 'undefined') {
-      headers['content-length'] = Buffer.byteLength(body);
-    }
+getMiddlewares().forEach(middleware => app.use(middleware));
 
-    Object.assign(this, {
-      ip: remoteAddress,
-      complete: true,
-      httpVersion: '1.1',
-      httpVersionMajor: '1',
-      httpVersionMinor: '1',
-      method,
-      headers,
-      body,
-      url,
-    });
-
-    this._read = () => {
-      this.push(body);
-      this.push(null);
-    };
-  }
-}
-
-function requestMethod(event) {
-  return event.requestContext.http.method || 'GET';
-}
-
-function requestRemoteAddress(event) {
-  return event.requestContext.http.sourceIp;
-}
-
-function requestHeaders(event) {
-  const initialHeader = Array.isArray(event.cookies)
-    ? { cookie: event.cookies.join('; ') }
-    : {};
-
-  return Object.keys(event.headers).reduce((headers, key) => {
-    headers[key.toLowerCase()] = event.headers[key];
-    return headers;
-  }, initialHeader);
-}
-
-function requestBody(event) {
-  const type = typeof event.body;
-
-  if (Buffer.isBuffer(event.body)) {
-    return event.body;
-  } else if (type === 'string') {
-    return Buffer.from(event.body, event.isBase64Encoded ? 'base64' : 'utf8');
-  } else if (type === 'object') {
-    return Buffer.from(JSON.stringify(event.body));
-  }
-
-  throw new Error(`Unexpected event.body type: ${typeof event.body}`);
-}
-
-function requestUrl(event) {
-  return URL.format({
-    pathname: event.rawPath,
-    search: event.rawQueryString,
-  });
-}
-
-function cleanupEvent(event = {}) {
-  event.requestContext = event.requestContext || {};
-  event.body = event.body || '';
-  event.headers = event.headers || {};
-  return event;
-}
-
-function cleanupRequest(event, options = {}) {
-  const method = requestMethod(event);
-  const remoteAddress = requestRemoteAddress(event);
-  const headers = requestHeaders(event);
-  const body = requestBody(event);
-  const url = requestUrl(event);
-
-  if (typeof options.requestId === 'string' && options.requestId.length > 0) {
-    const header = options.requestId.toLowerCase();
-    headers[header] = headers[header] || event.requestContext.requestId;
-  }
-
-  return new Request({
-    method,
-    headers,
-    body,
-    remoteAddress,
-    url,
-  });
-}
-
-exports.handler = async function (event) {
-  event = cleanupEvent(event);
-console.log(event, 1)
+app.use(async (ctx, next) => {
   let handler = (ctx) => { ctx.status = 404; }
-
-  const ctx = {
-    status: 200,
-    body: 'Hi!',
-    request: cleanupRequest(event)
-  };
 
   switch (ctx.request.method) {
     case 'GET':
@@ -141,12 +34,7 @@ console.log(event, 1)
     break;
   }
 
-  let middlewares = getMiddlewares();
-  middlewares = Array.isArray(middlewares) ? middlewares : [middlewares];
-  await compose(middlewares.concat(handler))(ctx);
+  return await handler(ctx, next);
+});
 
-  return {
-    statusCode: ctx.status,
-    body: typeof ctx.body === 'object' ? JSON.stringify(ctx.body) : ctx.body
-  }
-}
+exports.handler = serverless(app);

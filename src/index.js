@@ -2,7 +2,6 @@ import glob from 'glob';
 import fs from 'fs';
 import path from 'path';
 import { spawnSync } from 'child_process';
-
 const rollupPkgPath = require.resolve('rollup/package.json'); 
 const rollupDir = path.dirname(rollupPkgPath);
 const rollupPkg = require(rollupPkgPath);
@@ -63,12 +62,15 @@ function buildLamda(routeDir, distDir, middlewarePath, fileName) {
       routes.push({
         id: route ? route.replace(/[^a-zA-Z0-9]+/g, "-") : 'root',
         path: `/${route}`,
-        buildDir: path.join(distDir, filePath)
+        buildDir: path.join(distDir, filePath),
+        fileSize: `${(fs.statSync(path.join(distDir, filePath, 'index.js')).size / 1000000).toFixed(2)} MB`
       });
 
     });
     
     fs.writeFileSync(path.join(distDir, 'routes.json'), JSON.stringify(routes, null, 2), 'utf8');
+
+    console.table(routes)
   });
 }
 
