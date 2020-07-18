@@ -12,7 +12,7 @@ function sanitize(path) {
 }
 
 function buildLamda(routeDir, distDir, middlewarePath, fileName) {
-  let globPattern = path.join(routeDir, '**/!(*.test|*.client|*.build|*.html).js');
+  let globPattern = path.join(routeDir, '**/!(*.test|*.client|*.build|*.html|*.md).js');
   if (fileName) {
     globPattern = path.join(routeDir, fileName);
   }
