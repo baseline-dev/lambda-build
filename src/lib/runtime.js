@@ -26,7 +26,7 @@ app.use(async (ctx, next) => {
     case 'HEAD':
       if (typeof module.head !== 'undefined') handler = module.head();
     default:
-      if (typeof module.all !== 'undefined') handler = module.all();
+      if (typeof module.any !== 'undefined') handler = module.any();
   }
 
   return await handler(ctx, next);
