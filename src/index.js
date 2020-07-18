@@ -62,7 +62,9 @@ function buildLamda(routeDir, distDir, middlewarePath, fileName) {
       routes.push({
         id: route ? route.replace(/[^a-zA-Z0-9]+/g, "-") : 'root',
         path: `/${route}`,
-        buildDir: path.join(distDir, filePath),
+        buildDir: distDir,
+        exclude: `!(${filePath})**/**`,
+        handler: `${filePath}.index.handler`,
         fileSize: `${(fs.statSync(path.join(distDir, filePath, 'index.js')).size / 1000000).toFixed(2)} MB`
       });
 
