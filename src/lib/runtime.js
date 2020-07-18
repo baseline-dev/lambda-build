@@ -5,7 +5,7 @@ import {getMiddlewares} from '{{middlewaresPath}}';
 
 const app = new Koa();
 
-getMiddlewares().forEach(middleware => app.use(middleware));
+getMiddlewares(app).forEach(middleware => app.use(middleware));
 
 app.use(async (ctx, next) => {
   let handler = (ctx) => { ctx.status = 404; }
