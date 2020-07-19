@@ -8,6 +8,11 @@ const app = new Koa();
 getMiddlewares(app).forEach(middleware => app.use(middleware));
 
 app.use(async (ctx, next) => {
+  if (!ctx.time) {
+    ctx.time = +new Date();
+    console.log('New measurement handler: ', ctx.time / 1000);
+  }
+
   let handler = (ctx) => { ctx.status = 404; }
 
   switch (ctx.request.method) {
@@ -29,7 +34,12 @@ app.use(async (ctx, next) => {
       if (typeof module.all !== 'undefined') handler = module.all();
   }
 
-  return await handler(ctx, next);
+  const result = await handler(ctx, next);
+
+  const time = +new Date();
+  console.log('Timestamp end: ', (time - ctx.time) / 1000);
+
+  return result;
 });
 
 exports.handler = serverless(app);
