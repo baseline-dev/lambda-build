@@ -30,7 +30,7 @@ function buildLamda(routeDir, distDir, middlewarePath, fileName, gitSha = '') {
   if (fileName) {
     globPattern = path.join(routeDir, fileName);
   }
-
+console.log('Building')
   function build(file) {
     return new Promise(async (resolve, reject) => {
       try {
@@ -90,6 +90,7 @@ function buildLamda(routeDir, distDir, middlewarePath, fileName, gitSha = '') {
   }
 
   glob(globPattern, async function (er, files) {
+    console.log('Building', files)
     const routes = await concurrent(files, build, 5);
     
     await fs.writeFile(path.join(distDir, 'routes.json'), JSON.stringify(routes, null, 2), 'utf8');
