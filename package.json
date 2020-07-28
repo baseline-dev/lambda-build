@@ -26,6 +26,7 @@
     "@rollup/plugin-commonjs": "^14.0.0",
     "@rollup/plugin-json": "^4.1.0",
     "@rollup/plugin-node-resolve": "^8.4.0",
+    "await-spawn": "^3.0.0",
     "glob": "^7.1.6",
     "rollup": "^2.21.0",
     "rollup-plugin-terser": "^6.1.0",
