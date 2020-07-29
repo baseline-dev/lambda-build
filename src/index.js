@@ -36,6 +36,14 @@ function buildLamda(routeDir, distDir, middlewarePath, gitSha = '', fileName) {
       try {
         console.log(`Building: ${file}`);
 
+        // Checking if there is a client.js
+        let clientJavaScript = '';
+        try {
+          const clientFile = path.join(path.dirname(file), `${path.parse(file).name}.client.js`);
+          await fs.stat(clientFile);
+          clientJavaScript = path.relative(routeDir, clientFile);
+        } catch(e) {}
+        
         const parts = path.parse(path.relative(routeDir, file));
 
         const runtime = await fs.readFile(path.join(__dirname, 'lib', 'runtime.js'), 'utf-8');
@@ -43,6 +51,7 @@ function buildLamda(routeDir, distDir, middlewarePath, gitSha = '', fileName) {
         const output = runtime
           .replace('{{import}}', `./${parts.base}`)
           .replace('{{middlewaresPath}}', middlewarePath)
+          .replace('{{clientJs}}', clientJavaScript)
           .replace('{{gitSha}}', gitSha);
 
         let route = parts.dir;

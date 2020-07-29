@@ -5,7 +5,8 @@ import {getMiddlewares} from '{{middlewaresPath}}';
 
 const app = new Koa();
 
-process.env.GIT_SHA = '{{gitSha}}';
+app.context.gitSha = '{{gitSha}}';
+app.context.clientJs = '{{clientJs}}';
 
 getMiddlewares(app).forEach(middleware => app.use(middleware));
 
