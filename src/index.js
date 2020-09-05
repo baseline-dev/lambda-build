@@ -25,7 +25,7 @@ var concurrent = async (xs, f, n = Infinity) => {
   return results;
 };
 
-function buildLamda(routeDir, distDir, middlewarePath, gitSha = '', fileName) {
+function buildLamda(routeDir, distDir, middlewarePath, gitSha = '', concurrency = 5, fileName) {
   let globPattern = path.join(routeDir, '**/!(*.test|*.client|*.build|*.html|*.md).js');
   if (fileName) {
     globPattern = path.join(routeDir, fileName);
@@ -99,7 +99,7 @@ function buildLamda(routeDir, distDir, middlewarePath, gitSha = '', fileName) {
   }
 
   glob(globPattern, async function (er, files) {
-    const routes = await concurrent(files, build, 5);
+    const routes = await concurrent(files, build, concurrency);
     
     await fs.writeFile(path.join(distDir, 'routes.json'), JSON.stringify(routes, null, 2), 'utf8');
 
