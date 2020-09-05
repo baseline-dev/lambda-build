@@ -79,7 +79,7 @@ function buildLamda(routeDir, distDir, middlewarePath, gitSha = '', concurrency 
           console.log(`Error generating: ${path.join(route, 'index.js')}`);
           console.log(parcel.stderr.toString())
         } else {
-          console.log(`Written output to: ${path.join(distDir, route, 'index.js')}`)
+          console.log(`Written output to: ${path.join(distDir, filePath, 'index.js')}`)
         }
 
         await fs.unlink(path.join(routeDir, parts.dir, fileName));
