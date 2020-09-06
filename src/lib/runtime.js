@@ -13,7 +13,7 @@ app.context.clientJs = '{{clientJs}}';
 getMiddlewares(app).forEach(middleware => app.use(middleware));
 
 for (let method in module) {
-  let handler = routes[method]();
+  let handler = module[method]();
   if (!Array.isArray(handler)) handler = [handler];
   if (method === 'destroy') method = 'del';
   router[method].apply(router, ['*'].concat(handler));
