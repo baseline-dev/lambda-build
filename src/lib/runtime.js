@@ -16,7 +16,7 @@ for (let method in module) {
   let handler = module[method]();
   if (!Array.isArray(handler)) handler = [handler];
   if (method === 'destroy') method = 'del';
-  router[method].apply(router, ['*'].concat(handler));
+  router[method].apply(router, ['(.*)'].concat(handler));
 }
 
 app.use(router.routes());
