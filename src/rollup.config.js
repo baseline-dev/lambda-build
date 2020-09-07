@@ -3,6 +3,7 @@ import commonjs from "@rollup/plugin-commonjs";
 import nodeResolve from "@rollup/plugin-node-resolve";
 import json from '@rollup/plugin-json';
 import visualizer from 'rollup-plugin-visualizer';
+import inject from '@rollup/plugin-inject';
 
 export default {
   output: {
@@ -26,6 +27,10 @@ export default {
     nodeResolve({
       jsnext: true,
       main: false
+    }),
+    inject({
+      BaselineError: ['@baseline-dev/reporter', 'BaselineError'],
+      BaselineSuccess: ['@baseline-dev/reporter', 'BaselineSuccess']
     })
   ]
 };
