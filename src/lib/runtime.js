@@ -19,6 +19,7 @@ for (let method in module) {
   router[method].apply(router, ['(.*)'].concat(handler));
 }
 
+app.use(router.allowedMethods());
 app.use(router.routes());
 
 exports.handler = serverless(app);
